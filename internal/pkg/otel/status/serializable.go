@@ -75,10 +75,11 @@ func FromSerializableStatus(ss *SerializableStatus) (*status.AggregateStatus, er
 	}
 
 	for k, cs := range ss.ComponentStatuses {
-		as.ComponentStatusMap[k], err = FromSerializableStatus(cs)
-		if err != nil {
-			return nil, err
+		componentStatus, componentErr := FromSerializableStatus(cs)
+		if componentErr != nil {
+			return nil, fmt.Errorf("failed to deserialize component status %s: %w", k, componentErr)
 		}
+		as.ComponentStatusMap[k] = componentStatus
 	}
 
 	return as, nil
